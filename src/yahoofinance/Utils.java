@@ -59,7 +59,7 @@ public class Utils {
             }
             result = new BigDecimal(data).multiply(multiplier);
         } catch (NumberFormatException e) {
-            YahooFinance.logger.log(Level.INFO, "Failed to parse: " + data, e);
+            YahooFinance.logger.log(Level.INFO, "Failed to parse BigDecimal: " + data);
         }
         return result;
     }
@@ -98,7 +98,7 @@ public class Utils {
             }
             result = Double.parseDouble(data) * multiplier;
         } catch (NumberFormatException e) {
-            YahooFinance.logger.log(Level.INFO, "Failed to parse: " + data, e);
+            YahooFinance.logger.log(Level.SEVERE, "Failed to parse Double: " + data);
         }
         return result;
     }
@@ -112,7 +112,7 @@ public class Utils {
             data = Utils.cleanNumberString(data);
             result = Integer.parseInt(data);
         } catch (NumberFormatException e) {
-            YahooFinance.logger.log(Level.INFO, "Failed to parse: " + data, e);
+            YahooFinance.logger.log(Level.SEVERE, "Failed to parse Integer: " + data);
         }
         return result;
     }
@@ -126,7 +126,7 @@ public class Utils {
             data = Utils.cleanNumberString(data);
             result = Long.parseLong(data);
         } catch (NumberFormatException e) {
-            YahooFinance.logger.log(Level.INFO, "Failed to parse: " + data, e);
+            YahooFinance.logger.log(Level.SEVERE, "Failed to parse Long: " + data);
         }
         return result;
     }
