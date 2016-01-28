@@ -1,5 +1,9 @@
 package yahoofinance.quotes;
 
+import com.csvreader.CsvReader;
+import yahoofinance.Utils;
+import yahoofinance.YahooFinance;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,14 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import yahoofinance.Utils;
-import yahoofinance.YahooFinance;
 
 /**
- *
- * @author Stijn Strickx
  * @param <T> Type of object that can contain the retrieved information from a
- * quotes request
+ *            quotes request
+ * @author Stijn Strickx
  */
 public abstract class QuotesRequest<T> {
 
@@ -41,7 +42,7 @@ public abstract class QuotesRequest<T> {
         this.properties = properties;
     }
 
-    protected abstract T parseCSVLine(String line);
+    protected abstract T load(final String[] values);
 
     private String getFieldsString() {
         StringBuilder result = new StringBuilder();
@@ -80,21 +81,19 @@ public abstract class QuotesRequest<T> {
 
         URL request = new URL(url);
         URLConnection connection = request.openConnection();
-        InputStreamReader is = new InputStreamReader(connection.getInputStream());
-        BufferedReader br = new BufferedReader(is);
-
-        // Parse CSV
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
-            if (line.equals("Missing Symbols List.")) {
-                YahooFinance.logger.log(Level.SEVERE, "The requested symbol was not recognized by Yahoo Finance");
-            } else {
-                YahooFinance.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
-
-                T data = this.parseCSVLine(line);
-                result.add(data);
+        try (InputStreamReader is = new InputStreamReader(connection.getInputStream())) {
+            final BufferedReader br = new BufferedReader(is);
+            final CsvReader reader = new CsvReader(br);
+            while (reader.readRecord()) {
+                if ("Missing Symbols List.".equals(reader.get(0))) {
+                    YahooFinance.logger.log(Level.SEVERE, "The requested symbol was not recognized by Yahoo Finance");
+                    break;
+                } else {
+                    T data = this.load(reader.getValues());
+                    result.add(data);
+                }
             }
         }
-
         return result;
     }
 

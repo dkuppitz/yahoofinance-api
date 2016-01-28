@@ -258,17 +258,6 @@ public class Utils {
         return sb.toString();
     }
 
-    /**
-     * Strips the unwanted chars from a line returned in the CSV
-     * Used for parsing the FX CSV lines
-     *
-     * @param line the original CSV line
-     * @return the stripped line
-     */
-    public static String stripOverhead(String line) {
-        return line.replaceAll("\"", "");
-    }
-
     public static String unescape(String data) {
         StringBuilder buffer = new StringBuilder(data.length());
         for (int i = 0; i < data.length(); i++) {

@@ -1,5 +1,9 @@
 package yahoofinance.histquotes;
 
+import com.csvreader.CsvReader;
+import yahoofinance.Utils;
+import yahoofinance.YahooFinance;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,11 +16,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import yahoofinance.Utils;
-import yahoofinance.YahooFinance;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class HistQuotesRequest {
@@ -33,6 +34,7 @@ public class HistQuotesRequest {
     static {
         DEFAULT_FROM.add(Calendar.YEAR, -1);
     }
+
     public static final Calendar DEFAULT_TO = Calendar.getInstance();
     public static final Interval DEFAULT_INTERVAL = Interval.MONTHLY;
 
@@ -95,30 +97,23 @@ public class HistQuotesRequest {
 
         URL request = new URL(url);
         URLConnection connection = request.openConnection();
-        InputStreamReader is = new InputStreamReader(connection.getInputStream());
-        BufferedReader br = new BufferedReader(is);
-        br.readLine(); // skip the first line
-        // Parse CSV
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
-
-            YahooFinance.logger.log(Level.INFO, ("Parsing CSV line: " + Utils.unescape(line)));
-            HistoricalQuote quote = this.parseCSVLine(line);
-            result.add(quote);
+        try (final InputStreamReader is = new InputStreamReader(connection.getInputStream())) {
+            final BufferedReader br = new BufferedReader(is);
+            final CsvReader reader = new CsvReader(br);
+            if (reader.readHeaders()) {
+                while (reader.readRecord()) {
+                    final HistoricalQuote quote = new HistoricalQuote(this.symbol,
+                            Utils.parseHistDate(reader.get(0)),
+                            Utils.getBigDecimal(reader.get(1)),
+                            Utils.getBigDecimal(reader.get(3)),
+                            Utils.getBigDecimal(reader.get(2)),
+                            Utils.getBigDecimal(reader.get(4)),
+                            Utils.getBigDecimal(reader.get(6)),
+                            Utils.getLong(reader.get(5)));
+                    result.add(quote);
+                }
+            }
         }
         return result;
     }
-
-    private HistoricalQuote parseCSVLine(String line) {
-        String[] data = line.split(YahooFinance.QUOTES_CSV_DELIMITER);
-        return new HistoricalQuote(this.symbol,
-                Utils.parseHistDate(data[0]),
-                Utils.getBigDecimal(data[1]),
-                Utils.getBigDecimal(data[3]),
-                Utils.getBigDecimal(data[2]),
-                Utils.getBigDecimal(data[4]),
-                Utils.getBigDecimal(data[6]),
-                Utils.getLong(data[5])
-        );
-    }
-
 }
