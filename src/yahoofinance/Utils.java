@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,35 +15,23 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 
 /**
- *
  * @author Stijn Strickx
  */
 public class Utils {
+
+    private static final List<String> NOT_PARSEABLE = Arrays.asList(null, "N/A", "nan", "-", "");
 
     public static final BigDecimal HUNDRED = new BigDecimal(100);
     public static final BigDecimal THOUSAND = new BigDecimal(1000);
     public static final BigDecimal MILLION = new BigDecimal(1000000);
     public static final BigDecimal BILLION = new BigDecimal(1000000000);
-        
-    public static String join(String[] data, String d) {
-        if (data.length == 0) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        int i;
-
-        for (i = 0; i < (data.length - 1); i++) {
-            sb.append(data[i]).append(d);
-        }
-        return sb.append(data[i]).toString();
-    }
 
     private static String cleanNumberString(String data) {
-        return Utils.join(data.trim().split(","), "");
+        return String.join("", data.trim().split(","));
     }
 
     private static boolean isParseable(String data) {
-        return !(data == null || data.equals("N/A") || data.equals("-") || data.equals(""));
+        return !NOT_PARSEABLE.contains(data);
     }
 
     public static BigDecimal getBigDecimal(String data) {
@@ -73,11 +63,11 @@ public class Utils {
         }
         return result;
     }
-    
+
     public static BigDecimal getBigDecimal(String dataMain, String dataSub) {
         BigDecimal main = getBigDecimal(dataMain);
         BigDecimal sub = getBigDecimal(dataSub);
-        if(main.compareTo(BigDecimal.ZERO) == 0) {
+        if (main.compareTo(BigDecimal.ZERO) == 0) {
             return sub;
         }
         return main;
@@ -148,7 +138,7 @@ public class Utils {
         return numerator.divide(denominator, 4, BigDecimal.ROUND_HALF_EVEN)
                 .multiply(HUNDRED).setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
-    
+
     public static double getPercent(double numerator, double denominator) {
         if (denominator == 0) {
             return 0;
@@ -210,15 +200,15 @@ public class Utils {
      * Used to parse the last trade date / time. Returns null if the date / time
      * cannot be parsed.
      *
-     * @param date String received that represents the date
-     * @param time String received that represents the time
+     * @param date     String received that represents the date
+     * @param time     String received that represents the time
      * @param timeZone time zone to use for parsing the date time
      * @return Calendar object with the parsed datetime
      */
     public static Calendar parseDateTime(String date, String time, TimeZone timeZone) {
         String datetime = date + " " + time;
         SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mma", Locale.US);
-        
+
         format.setTimeZone(timeZone);
         try {
             if (Utils.isParseable(date) && Utils.isParseable(time)) {
@@ -269,7 +259,7 @@ public class Utils {
     }
 
     /**
-     * Strips the unwanted chars from a line returned in the CSV 
+     * Strips the unwanted chars from a line returned in the CSV
      * Used for parsing the FX CSV lines
      *
      * @param line the original CSV line

@@ -198,7 +198,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, boolean includeHistorical) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), includeHistorical);
+        return YahooFinance.getQuotes(String.join(",", symbols), includeHistorical);
     }
     
     /**
@@ -217,7 +217,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, Interval interval) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), HistQuotesRequest.DEFAULT_FROM, HistQuotesRequest.DEFAULT_TO, interval);
+        return YahooFinance.getQuotes(String.join(",", symbols), HistQuotesRequest.DEFAULT_FROM, HistQuotesRequest.DEFAULT_TO, interval);
     }
     
     /**
@@ -236,7 +236,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, Calendar from) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), from, HistQuotesRequest.DEFAULT_TO, HistQuotesRequest.DEFAULT_INTERVAL);
+        return YahooFinance.getQuotes(String.join(",", symbols), from, HistQuotesRequest.DEFAULT_TO, HistQuotesRequest.DEFAULT_INTERVAL);
     }
     
     /**
@@ -256,7 +256,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, Calendar from, Interval interval) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), from, HistQuotesRequest.DEFAULT_TO, interval);
+        return YahooFinance.getQuotes(String.join(",", symbols), from, HistQuotesRequest.DEFAULT_TO, interval);
     }
     
     /**
@@ -277,7 +277,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, Calendar from, Calendar to) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), from, to, HistQuotesRequest.DEFAULT_INTERVAL);
+        return YahooFinance.getQuotes(String.join(",", symbols), from, to, HistQuotesRequest.DEFAULT_INTERVAL);
     }
     
     /**
@@ -299,7 +299,7 @@ public class YahooFinance {
      * @throws java.io.IOException when there's a connection problem
      */
     public static Map<String, Stock> get(String[] symbols, Calendar from, Calendar to, Interval interval) throws IOException {
-        return YahooFinance.getQuotes(Utils.join(symbols, ","), from, to, interval);
+        return YahooFinance.getQuotes(String.join(",", symbols), from, to, interval);
     }
     
     /**
@@ -335,7 +335,7 @@ public class YahooFinance {
      * @see             #getFx(java.lang.String) 
      */
     public static Map<String, FxQuote> getFx(String[] symbols) throws IOException {
-        FxQuotesRequest request = new FxQuotesRequest(Utils.join(symbols, ","));
+        FxQuotesRequest request = new FxQuotesRequest(String.join(",", symbols));
         List<FxQuote> quotes = request.getResult();
         Map<String, FxQuote> result = new HashMap<String, FxQuote>();
         for(FxQuote quote : quotes) {
